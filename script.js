@@ -2,7 +2,16 @@ const menuToggle = document.getElementById('menu-toggle');
 const navLinks = document.querySelector('.nav-links');
 
 menuToggle.addEventListener('click', () => {
-    navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+    navLinks.classList.toggle('nav-open');
+    menuToggle.textContent = navLinks.classList.contains('nav-open') ? '✕' : '☰';
+});
+
+// Close the mobile menu automatically when a nav link is tapped
+document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', () => {
+        navLinks.classList.remove('nav-open');
+        menuToggle.textContent = '☰';
+    });
 });
 
 // Random burst glitch on the name — "chirk chk" then quiet
@@ -43,7 +52,7 @@ function updateActiveLink() {
 
 window.addEventListener('scroll', updateActiveLink);
 
-// Live GitHub repo fetch — pulls Utsav's repos fresh on every page load
+// Live GitHub repo fetch
 const GITHUB_USERNAME = 'UnsoundUtsav';
 const projectGrid = document.getElementById('project-grid');
 
@@ -96,12 +105,7 @@ async function loadRepos() {
 
 loadRepos();
 
-// ============================================
-// BACKGROUND NETWORK CANVAS
-// Draws floating dots that connect with faint lines
-// whenever they drift close to one another — classic
-// "hacker network" background effect.
-// ============================================
+// Background network canvas
 const canvas = document.getElementById('network-bg');
 const ctx = canvas.getContext('2d');
 
@@ -122,7 +126,7 @@ function createNodes() {
         nodes.push({
             x: Math.random() * canvas.width,
             y: Math.random() * canvas.height,
-            vx: (Math.random() - 0.5) * 0.3, // slow drift, both directions
+            vx: (Math.random() - 0.5) * 0.3,
             vy: (Math.random() - 0.5) * 0.3
         });
     }
@@ -132,12 +136,10 @@ createNodes();
 function drawNetwork() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // move + draw each node
     nodes.forEach(node => {
         node.x += node.vx;
         node.y += node.vy;
 
-        // bounce off edges instead of drifting off-screen
         if (node.x <= 0 || node.x >= canvas.width) node.vx *= -1;
         if (node.y <= 0 || node.y >= canvas.height) node.vy *= -1;
 
@@ -147,7 +149,6 @@ function drawNetwork() {
         ctx.fill();
     });
 
-    // connect nearby nodes with a line whose opacity fades with distance
     for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
             const dx = nodes[i].x - nodes[j].x;
@@ -170,12 +171,7 @@ function drawNetwork() {
 }
 drawNetwork();
 
-// ============================================
-// RANDOM FULL-SCREEN GLITCH FLASH
-// Briefly overlays scanline distortion + a screen
-// shake across the entire page, then clears —
-// separate from the name glitch, on its own random timer.
-// ============================================
+// Random full-screen glitch flash
 const screenGlitch = document.getElementById('screen-glitch');
 
 function triggerScreenGlitch() {
@@ -184,8 +180,8 @@ function triggerScreenGlitch() {
     const flashDuration = 100 + Math.random() * 150;
     setTimeout(() => screenGlitch.classList.remove('flash-active'), flashDuration);
 
-    const nextDelay = 4000 + Math.random() * 5000; // 4-9 sec between flashes
+    const nextDelay = 4000 + Math.random() * 5000;
     setTimeout(triggerScreenGlitch, nextDelay);
 }
 
-setTimeout(triggerScreenGlitch, 3000); // first flash after 3s, so it's not instant on load
+setTimeout(triggerScreenGlitch, 3000);
